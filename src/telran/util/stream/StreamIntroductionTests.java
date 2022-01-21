@@ -57,9 +57,18 @@ class StreamIntroductionTests {
 		assertArrayEquals(new int[] {1, 2,3}, list.stream().mapToInt(n -> n).toArray());
 	}
 	private Integer [] getLotoNumbers(int nNumbers, int min, int max) {
-		//TODO
+		//TODO - Done
 		//using one stream to get array of unique random numbers in the given range
-		return null;
+		/*
+		Integer arr[] = new Random().ints(min, max).distinct().limit(nNumbers).boxed()
+				.toList().toArray(Integer[]::new);
+		for(Integer num : arr) {
+			System.out.print(num+"\n");
+		}
+		return arr;
+		*/	
+		return new Random().ints(min, max).distinct().limit(nNumbers).boxed()
+				.toList().toArray(Integer[]::new);	
 	}
 	@Test
 	void lotoTest () {
@@ -75,17 +84,83 @@ class StreamIntroductionTests {
 	 * @return true if ar contains two numbers, the sum of which equals half of all array's numbers
 	 * complexity O[N] 
 	 */
-	private boolean isHalfSum(int []ar) {
-		//TODO 
+	/*   Using two loops
+	 *   O(n²)
+	 */
+	private boolean isHalfSum_1(int [] originalArray) {
+		//TODO Done
+		int desiredSum = Arrays.stream(originalArray).sum() / 2;
+		for(int i=0; i<originalArray.length-1; i++) {
+			for(int j=i+1; j<originalArray.length; j++) { 
+				if((originalArray[i]+originalArray[j]) == desiredSum) {
+					return true;
+				}
+			}
+		}
 		return false;
 		
 	}
+	/*  Sorting and two Pointer approach
+	   Time Complexity = Time complexity of sorting + Time complexity of two pointer approach
+	   (while loop) = O (n log n) + O(n) = O (n log n)
+	 */
+	private boolean isHalfSum_2(int [] originalArray) {
+		//TODO Done
+		Arrays.sort(originalArray);
+		int desiredSum = Arrays.stream(originalArray).sum() / 2;
+		int leftIndex = 0, rightIndex = originalArray.length-1;
+		while(leftIndex < rightIndex) {
+			int sum = originalArray[leftIndex] + originalArray[rightIndex];
+			if(sum == desiredSum) return true;
+			if(sum > desiredSum) rightIndex--;
+			if(sum < desiredSum) leftIndex++;
+		}
+		return false;
+	}
+/* Using a Hash Table
+ 				Complexity Analysis
+	In worst case scenario, we scan the whole array and didn't find any such pair.
+ 	Time Complexity = Time complexity of inserting n elements in 
+ 	hash table + Time complexity of searching (K-A[i]) n times in hash table = n.
+  	O(1) + n . O(1) = O(n)
+
+ */
+	private boolean isHalfSum_3(int [] originalArray) {
+		//TODO 
+		int desiredSum = Arrays.stream(originalArray).sum() / 2;
+		HashSet<Integer> hash = new HashSet<>();
+		for(int n : originalArray) {
+//			System.out.println(n);
+			int x = desiredSum - n;
+			if(hash.contains(x)) {
+				return true;
+			}
+			hash.add(n);
+		}
+		return false;
+	}
 	@Test
 	void isHalfSumTest() {
-		int ar[] = {1,2, 10, -7};
-		assertTrue(isHalfSum(ar));
-		int ar1[] = {1, 2, 10, 7};
-		assertFalse(isHalfSum(ar1));
+		int ar1[] = {1,2, 10, -7};
+		assertTrue(isHalfSum_1(ar1));
+		assertTrue(isHalfSum_2(ar1));
+		assertTrue(isHalfSum_3(ar1));
+		int ar2[] = {1, 2, 10, 7};
+		assertFalse(isHalfSum_1(ar2));
+		assertFalse(isHalfSum_2(ar2));
+		assertFalse(isHalfSum_3(ar2));
+		int[] ar3 = { 4, 5, 6, 17, 18, 20 };
+		assertTrue(isHalfSum_1(ar3));
+		assertTrue(isHalfSum_2(ar3));
+		assertTrue(isHalfSum_3(ar3));
+		int[] ar4 = {11,11,11,11};
+		assertTrue(isHalfSum_1(ar4));
+		assertTrue(isHalfSum_2(ar4));
+		assertTrue(isHalfSum_3(ar4));
+		int[] ar5 = { 17, 18, 4, 5, 6, 20 };
+		assertTrue(isHalfSum_1(ar5));
+		assertTrue(isHalfSum_2(ar5));
+		assertTrue(isHalfSum_3(ar5));
 	}
 
 }

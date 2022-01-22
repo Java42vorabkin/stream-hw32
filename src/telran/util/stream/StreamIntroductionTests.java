@@ -39,7 +39,7 @@ class StreamIntroductionTests {
 	@Test
 	void streamStringSourceTest() {
 		String str = "Hello";
-		str.chars().forEach(n -> System.out.printf("%c;", n));
+		str.chars().forEach(n -> System.out.printf("%c %d;", n, n));
 		
 		
 	}
@@ -59,15 +59,7 @@ class StreamIntroductionTests {
 	private Integer [] getLotoNumbers(int nNumbers, int min, int max) {
 		//TODO - Done
 		//using one stream to get array of unique random numbers in the given range
-		/*
-		Integer arr[] = new Random().ints(min, max).distinct().limit(nNumbers).boxed()
-				.toList().toArray(Integer[]::new);
-		for(Integer num : arr) {
-			System.out.print(num+"\n");
-		}
-		return arr;
-		*/	
-		return new Random().ints(min, max).distinct().limit(nNumbers).boxed()
+		return new Random().ints(min, max+1).distinct().limit(nNumbers).boxed()
 				.toList().toArray(Integer[]::new);	
 	}
 	@Test
@@ -130,7 +122,6 @@ class StreamIntroductionTests {
 		int desiredSum = Arrays.stream(originalArray).sum() / 2;
 		HashSet<Integer> hash = new HashSet<>();
 		for(int n : originalArray) {
-//			System.out.println(n);
 			int x = desiredSum - n;
 			if(hash.contains(x)) {
 				return true;
@@ -162,5 +153,14 @@ class StreamIntroductionTests {
 		assertTrue(isHalfSum_2(ar5));
 		assertTrue(isHalfSum_3(ar5));
 	}
-
+	@Test
+	void testFlatMap() {
+		Map<Integer, List<Integer>> map = new HashMap<>();
+		map.put(1, new LinkedList<Integer>(Arrays.asList(1,2,3)));
+		map.put(2, new LinkedList<Integer>(Arrays.asList(11,12,13)));
+		map.put(3, new LinkedList<Integer>(Arrays.asList(21,22,23)));
+		int sA = map.values().stream().mapToInt(List::size).sum();
+		int sE = map.values().stream().flatMap(a -> a.stream()).toArray(Integer[]::new).length;
+		System.out.println("sA="+sA+ "  sE="+sE);
+	}
 }
